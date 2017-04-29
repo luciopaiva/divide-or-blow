@@ -1,0 +1,31 @@
+
+body {
+    margin: 0;
+    margin-top: 1em;
+    padding: 0;
+}
+
+body {
+    font-family: sans-serif;
+    font-size: 30pt;
+    font-weight: bold;
+}
+
+#password {
+    border: 1px solid black
+}
+
+#password td {
+    border: 1px dashed black;
+    width: 25px;
+    text-align: center;
+}
+
+#board {
+    border: 1px solid black;
+    width: 80%;
+    left: 10%;
+    position: absolute;
+    margin-top: 1em;
+    min-height: 40%;
+}
