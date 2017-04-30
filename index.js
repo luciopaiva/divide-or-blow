@@ -43,19 +43,7 @@ class D1v1d3 {
         this.generatePassword();
 
         // animate shuffling
-        document.querySelector('.digits-row').classList.add('digits-row-slide-up');
-        const digitCards = document.querySelectorAll('.digits-row td');
-        for (let i = 0; i < 10; i++) {
-            const card = digitCards[i];
-            card.innerText = i.toString();
-        }
-        setInterval(() => {
-            for (const card of digitCards) {
-                const currentDigit = parseInt(card.innerText, 10);
-                const nextDigit = (currentDigit + 1) % 10;
-                card.innerText = nextDigit.toString();
-            }
-        }, 100);
+        this.animateShuffling();
 
         // keyboard actions
         this.registerKeyBinding([ord('A'), ord('J')], this.processChar.bind(this));   // keys A to J
@@ -86,6 +74,28 @@ class D1v1d3 {
         for (const digit of this.password) {
             this.charByDigit[digit] = String.fromCharCode(currentCharCode++);
         }
+    }
+
+    animateShuffling() {
+        document.querySelector('.digits-row').classList.add('digits-row-slide-up');
+        const digitCards = document.querySelectorAll('.digits-row td');
+        for (let i = 0; i < 10; i++) {
+            const card = digitCards[i];
+            card.innerText = i.toString();
+        }
+        const shufflingAnimationTimer = setInterval(() => {
+            for (const card of digitCards) {
+                const currentDigit = parseInt(card.innerText, 10);
+                const nextDigit = (currentDigit + 1) % 10;
+                card.innerText = nextDigit.toString();
+            }
+        }, 100);
+        setTimeout(() => {
+            clearInterval(shufflingAnimationTimer);
+            for (const card of digitCards) {
+                card.innerText = '?';
+            }
+        }, 3000);
     }
 
     processChar(event) {
