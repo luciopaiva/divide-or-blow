@@ -27,6 +27,8 @@ class D1v1d3 {
         this.divisor = '';
         /** @member {Boolean} */
         this.isTypingDivisor = false;
+        /** @member {Boolean} */
+        this.isGuessingSymbol = false;
         /** @member {Number[]} */
         this.password = null;
         /** @member {String[]} */
@@ -38,11 +40,13 @@ class D1v1d3 {
         this.generatePassword();
 
         // keyboard actions
-        this.registerKeyBinding([ord('A'), ord('J')], this.processChar.bind(this));  // keys A to J
-        this.registerKeyBinding(8, this.processBackspace.bind(this));                // backspace
-        this.registerKeyBinding(191, this.processDivisionOperator.bind(this));       // slash
-        this.registerKeyBinding(111, this.processDivisionOperator.bind(this));       // numeric pad slash
-        this.registerKeyBinding(13, this.processReturn.bind(this));                  // return
+        this.registerKeyBinding([ord('A'), ord('J')], this.processChar.bind(this));   // keys A to J
+        this.registerKeyBinding(8, this.processBackspace.bind(this));                 // backspace
+        this.registerKeyBinding(191, this.processDivisionOperator.bind(this));        // slash
+        this.registerKeyBinding(111, this.processDivisionOperator.bind(this));        // numeric pad slash
+        this.registerKeyBinding(13, this.processReturn.bind(this));                   // return
+        this.registerKeyBinding(187, this.processAssignOperator.bind(this));          // equal sign
+        this.registerKeyBinding([ord('0'), ord('9')], this.processDigit.bind(this));  // keys 0 to 9
         document.addEventListener('keydown', this.onKeyDown.bind(this), false);
     }
 
@@ -102,7 +106,7 @@ class D1v1d3 {
 
         let result = '';
         if (decipheredSecondValue === 0) {
-            result = ' → division by zero! 😲';
+            result = ' → division by zero! 😏';
         } else {
             const quotient = this.cipherValue(Math.floor(decipheredDividend / decipheredSecondValue));
             const remainder = this.cipherValue(decipheredDividend % decipheredSecondValue);
@@ -113,16 +117,47 @@ class D1v1d3 {
         row.innerText = `${this.dividend} ÷ ${this.divisor}${result}`;
         this.boardHistory.insertBefore(row, this.boardHistory.firstChild);
 
-        this.dividend = '';
-        this.isTypingDivisor = false;
-        this.divisor = '';
+        this.resetConsole();
+    }
+
+    processAssignOperator() {
+        if (this.isTypingDivisor) {
+            this.processReturn();  // treat as an alias to pressing the return key
+        } else if (this.dividend.length === 1) {  // only single-char symbols are assignable
+            this.isGuessingSymbol = true;
+        }
+    }
+
+    processDigit(event) {
+        if (!this.isGuessingSymbol) {
+            return;
+        }
+
+        const guess = event.keyCode - ord('0');
+        const actual = this.decipherValue(this.dividend);
+
+        const row = document.createElement('div');
+        row.innerText = `${this.dividend} = ${guess}? `;
+        row.innerText += (guess === actual) ? 'Right guess! 😊' : 'Bad guess... 😰';
+        this.boardHistory.insertBefore(row, this.boardHistory.firstChild);
+
+        this.resetConsole();
     }
 
     updateConsole() {
         this.boardConsole.innerText = '> ' + this.dividend;
-        if (this.isTypingDivisor) {
+        if (this.isGuessingSymbol) {
+            this.boardConsole.innerText += ' =';
+        } else if (this.isTypingDivisor) {
             this.boardConsole.innerText += ' ÷ ' + this.divisor;
         }
+    }
+
+    resetConsole() {
+        this.dividend = '';
+        this.divisor = '';
+        this.isTypingDivisor = false;
+        this.isGuessingSymbol = false;
     }
 
     /**
