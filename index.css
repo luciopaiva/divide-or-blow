@@ -1,31 +1,55 @@
 
-body {
-    margin: 0;
-    margin-top: 1em;
-    padding: 0;
+@font-face {
+    font-family: 'broken15';
+    src: url('assets/broken15.ttf');  /* taken from https://www.fontsquirrel.com/fonts/broken-15 */
+}
+
+h1 {
+    font-weight: normal;
 }
 
 body {
-    font-family: sans-serif;
+    font-family: 'broken15', serif;
+    margin: 1em 0 0;
+    padding: 0;
+    text-align: center;
+    background-color: #19181b;
+    color: #6081d2;
+}
+
+body {
+    /*font-family: sans-serif;*/
     font-size: 30pt;
-    font-weight: bold;
+    /*font-weight: bold;*/
 }
 
 #password {
-    border: 1px solid black
+    border: 1px solid #374577;
 }
 
 #password td {
-    border: 1px dashed black;
+    border: 1px dashed #374577;
     width: 25px;
     text-align: center;
+    animation: shake cubic-bezier(.36,.07,.19,.97) both;
 }
 
 #board {
     border: 1px solid black;
-    width: 80%;
-    left: 10%;
+    width: 40%;
+    left: 30%;
     position: absolute;
     margin-top: 1em;
     min-height: 40%;
+    text-align: left;
+}
+
+.console-cursor {
+    margin-left: 3px;
+    font-size: 10pt;
+    animation: blinker 1s linear infinite;
+}
+
+@keyframes blinker {
+    50% { opacity: 0; }
 }
