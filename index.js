@@ -9,6 +9,9 @@ function ord(char) {
     return char.charCodeAt(0);
 }
 
+/**
+ * All the game lies inside.
+ */
 class D1v1d3 {
 
     /**
@@ -38,6 +41,21 @@ class D1v1d3 {
 
         // generate a password for this game instance
         this.generatePassword();
+
+        // animate shuffling
+        document.querySelector('.digits-row').classList.add('digits-row-slide-up');
+        const digitCards = document.querySelectorAll('.digits-row td');
+        for (let i = 0; i < 10; i++) {
+            const card = digitCards[i];
+            card.innerText = i.toString();
+        }
+        setInterval(() => {
+            for (const card of digitCards) {
+                const currentDigit = parseInt(card.innerText, 10);
+                const nextDigit = (currentDigit + 1) % 10;
+                card.innerText = nextDigit.toString();
+            }
+        }, 100);
 
         // keyboard actions
         this.registerKeyBinding([ord('A'), ord('J')], this.processChar.bind(this));   // keys A to J
@@ -145,7 +163,7 @@ class D1v1d3 {
     }
 
     updateConsole() {
-        this.boardConsole.innerText = '> ' + this.dividend;
+        this.boardConsole.innerText = this.dividend;
         if (this.isGuessingSymbol) {
             this.boardConsole.innerText += ' =';
         } else if (this.isTypingDivisor) {
@@ -215,4 +233,7 @@ class D1v1d3 {
     }
 }
 
-new D1v1d3();
+window.addEventListener('load', () => {
+    // wait for everything to load, otherwise some things (like CSS animations) may not work properly
+    new D1v1d3();
+});

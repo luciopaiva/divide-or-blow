@@ -1,7 +1,27 @@
 
+:root {
+    --bgcolor: #19181b;
+    --fgcolor: #6081d2;
+    --border: 1px solid #374577;
+    --net-width: 480px;
+    --cell-height: 44px;
+    --cursor-pad: 3px;
+}
+
+@keyframes blinker {
+    50% { opacity: 0; }
+}
+
 @font-face {
     font-family: 'broken15';
-    src: url('assets/broken15.ttf');  /* taken from https://www.fontsquirrel.com/fonts/broken-15 */
+    /* taken from https://www.fontsquirrel.com/fonts/broken-15 */
+    src: url('assets/broken15.ttf');
+}
+
+@font-face {
+    font-family: 'borders-divide';
+    /* taken from http://www.1001freefonts.com/borders_divide__but_hearts_shall_conquer.font */
+    src: url('assets/borders-divide.ttf');
 }
 
 h1 {
@@ -13,43 +33,59 @@ body {
     margin: 1em 0 0;
     padding: 0;
     text-align: center;
-    background-color: #19181b;
-    color: #6081d2;
-}
-
-body {
-    /*font-family: sans-serif;*/
+    background-color: var(--bgcolor);
+    color: var(--fgcolor);
     font-size: 30pt;
-    /*font-weight: bold;*/
 }
 
-#password {
-    border: 1px solid #374577;
+#code-table {
+    border: var(--border);
+    width: var(--net-width);
+    table-layout: fixed;  /* equal sized cells */
 }
 
-#password td {
-    border: 1px dashed #374577;
-    width: 25px;
+#code-table td {
+    border: var(--border);
     text-align: center;
-    animation: shake cubic-bezier(.36,.07,.19,.97) both;
+    background-color: var(--bgcolor);
+    height: var(--cell-height);
+}
+
+.digits-row td {
+    position: relative;
+    z-index: -1;
+    top: 0;
+
+    transition: top 2s ease 0.3s;
+}
+
+.digits-row-slide-up td {
+    top: calc(-1 * var(--cell-height) - 6px);
 }
 
 #board {
-    border: 1px solid black;
-    width: 40%;
-    left: 30%;
-    position: absolute;
-    margin-top: 1em;
-    min-height: 40%;
+    border: var(--border);
+    --padding: 10px;
+    padding: var(--padding);
+    width: calc(var(--net-width) - 2 * var(--padding));
+    margin: 1em auto auto;  /* center it horizontally */
     text-align: left;
+    font-family: 'borders-divide', serif;
+    font-size: 16pt;
 }
 
-.console-cursor {
-    margin-left: 3px;
+#board-console-input {
+    margin-left: var(--cursor-pad);
+}
+
+#board .console-cursor {
+    margin-left: var(--cursor-pad);
     font-size: 10pt;
     animation: blinker 1s linear infinite;
 }
 
-@keyframes blinker {
-    50% { opacity: 0; }
+.footnote {
+    font-family: monospace;
+    font-size: 7pt;
+    font-style: italic;
 }
