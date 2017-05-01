@@ -11,7 +11,7 @@ class D1v1d3 {
      */
 
     constructor () {
-        this.INITIAL_COUNTDOWN = 5 * 60;
+        this.INITIAL_COUNTDOWN = 60;
         this.GOOD_GUESS_BONUS = 60;
         this.BAD_GUESS_PENALTY = -60;
 
@@ -139,7 +139,8 @@ class D1v1d3 {
         this.gameTitle.style.fontSize = this.expansionAnimationSizeStart;
 
         this.expansionAnimationTimer = setInterval(() => {
-            const progress = 1 - (this.countdown / this.INITIAL_COUNTDOWN);  // start in 0, blow up in 1
+            // start in 0, blow up in 1
+            const progress = 1 - (Math.min(this.INITIAL_COUNTDOWN, this.countdown) / this.INITIAL_COUNTDOWN);
             this.gameTitle.style.color = lerpColor(
                 this.expansionAnimationColorStart, this.expansionAnimationColorEnd, progress);
             this.gameTitle.style.fontSize = lerpNumber(
