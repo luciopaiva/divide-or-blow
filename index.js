@@ -40,12 +40,17 @@ class D1v1d3 {
         this.charByDigit = null;
         /** @member {KeyBinding[]} */
         this.keyBindings = [];
+        /** Which digits have already been revealed.
+         *  @member {Set} */
+        this.decipheredDigits = new Set();
 
         // generate a password for this game instance
         this.generatePassword();
 
         // animate shuffling
         this.animateShuffling();
+
+        this.resetConsole();
 
         // keyboard actions
         this.registerKeyBinding([ord('A'), ord('J')], this.processChar.bind(this));   // keys A to J
@@ -106,6 +111,9 @@ class D1v1d3 {
             this.divisor += key;
         } else {
             this.dividend += key;
+            if (this.dividend.length === 1) {
+                this.boardConsole.classList.remove('hidden');
+            }
         }
     }
 
@@ -137,13 +145,15 @@ class D1v1d3 {
         if (decipheredSecondValue === 0) {
             result = ' → division by zero! 😏';
         } else {
-            const quotient = this.cipherValue(Math.floor(decipheredDividend / decipheredSecondValue));
-            const remainder = this.cipherValue(decipheredDividend % decipheredSecondValue);
+            let quotient = Math.floor(decipheredDividend / decipheredSecondValue);
+            quotient = this.decipheredDigits.has(quotient) ? quotient : this.cipherValue(quotient);
+            let remainder = decipheredDividend % decipheredSecondValue;
+            remainder = this.decipheredDigits.has(remainder) ? remainder : this.cipherValue(remainder);
             result = ` = ${quotient}, remainder ${remainder}`;
         }
 
         const row = document.createElement('div');
-        row.innerText = `${this.dividend} ÷ ${this.divisor}${result}`;
+        row.innerText = `> ${this.dividend} ÷ ${this.divisor}${result}`;
         this.boardHistory.insertBefore(row, this.boardHistory.firstChild);
 
         this.resetConsole();
@@ -166,11 +176,13 @@ class D1v1d3 {
         const actual = this.decipherValue(this.dividend);
 
         const row = document.createElement('div');
-        row.innerText = `${this.dividend} = ${guess}? `;
-        row.innerText += (guess === actual) ? 'Right guess! 😊' : 'Bad guess... 😰';
+        row.innerText = `> ${this.dividend} = ${guess}... `;
+        row.innerText += (guess === actual) ? 'right guess! 😊' : 'bad guess 😰';
         this.boardHistory.insertBefore(row, this.boardHistory.firstChild);
 
         if (guess === actual) {
+            this.decipheredDigits.add(actual);
+
             // reveal corresponding card
             const digitIndex = ord(this.dividend) - ord('A');
             const card = this.digitElements[digitIndex];
@@ -195,6 +207,7 @@ class D1v1d3 {
         this.divisor = '';
         this.isTypingDivisor = false;
         this.isGuessingSymbol = false;
+        this.boardConsole.classList.add('hidden');  // keep it hidden when empty so cursor aligns correctly
     }
 
     /**
@@ -241,13 +254,20 @@ class D1v1d3 {
 
     /**
      * @param {number} decipheredValue
+     * @param {boolean} revealDiscoveredDigits whether we should keep discovered digits revealed in the resulting string
      * @return {string} the ciphered value
      */
-    cipherValue(decipheredValue) {
+    cipherValue(decipheredValue, revealDiscoveredDigits = true) {
         return decipheredValue.toString(10)  // convert to string as an easy way to get each digit
             .split('')                       // make array of digits
             .map(c => parseInt(c, 10))       // convert to an index
-            .map(d => this.charByDigit[d])   // map index to ciphered char
+            .map(d => {                      // map index to ciphered char
+                if (revealDiscoveredDigits && this.decipheredDigits.has(d)) {
+                    return d.toString();
+                } else {
+                    return this.charByDigit[d];
+                }
+            })
             .join('');                       // flatten into resulting ciphered value
     }
 }

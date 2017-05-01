@@ -5,7 +5,7 @@
     --border: 1px solid #374577;
     --net-width: 480px;
     --cell-height: 44px;
-    --cursor-pad: 3px;
+    --cursor-pad: 5px;
 }
 
 @keyframes blinker {
@@ -36,6 +36,10 @@ body {
     background-color: var(--bgcolor);
     color: var(--fgcolor);
     font-size: 30pt;
+}
+
+.hidden {
+    display: none;
 }
 
 #code-table {
@@ -82,7 +86,7 @@ body {
     width: calc(var(--net-width) - 2 * var(--padding));
     margin: 1em auto auto;  /* center it horizontally */
     text-align: left;
-    font-family: 'borders-divide', serif;
+    font-family: serif;
     font-size: 16pt;
 }
 
