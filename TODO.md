@@ -5,6 +5,7 @@
   - list of keyboard actions
 
 - gameplay
+  - discard guesses for digits that were already discovered
   - choose random message when player succeeds/fails in revealing a number
   - use some extra colors in the game (create a palette)
   - replace UTF8 emoticons with sprites
