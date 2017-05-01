@@ -14,8 +14,7 @@
 
 @font-face {
     font-family: 'broken15';
-    /* taken from https://www.fontsquirrel.com/fonts/broken-15 */
-    src: url('assets/broken15.ttf');
+    src: url('assets/broken15.ttf');  /* taken from https://www.fontsquirrel.com/fonts/broken-15 */
 }
 
 h1 {
@@ -32,21 +31,14 @@ body {
     font-size: 30pt;
 }
 
+section, footer {
+    margin: 20px auto auto;  /* center it horizontally */
+    width: var(--net-width);
+    overflow: hidden;  /* adjust height to contain floating children http://stackoverflow.com/a/7817313/778272 */
+}
+
 .hidden {
     display: none;
-}
-
-#code-table {
-    border: var(--border);
-    width: var(--net-width);
-    table-layout: fixed;  /* equal sized cells */
-}
-
-#code-table td {
-    border: var(--border);
-    text-align: center;
-    background-color: var(--bgcolor);
-    height: var(--cell-height);
 }
 
 .digits-row td {
@@ -73,27 +65,6 @@ body {
     top: calc(-1 * var(--cell-height) - 6px);
 }
 
-#board {
-    border: var(--border);
-    --padding: 10px;
-    padding: var(--padding);
-    width: calc(var(--net-width) - 2 * var(--padding));
-    margin: 1em auto auto;  /* center it horizontally */
-    text-align: left;
-    font-family: serif;
-    font-size: 16pt;
-}
-
-#board-console-input {
-    margin-left: var(--cursor-pad);
-}
-
-#board .console-cursor {
-    margin-left: var(--cursor-pad);
-    font-size: 10pt;
-    animation: blinker 1s linear infinite;
-}
-
 .footnote {
     font-family: monospace;
     font-size: 7pt;
@@ -106,4 +77,55 @@ body {
 
 .bad-guess {
     color: #ce2222;
+}
+
+.redundant-guess {
+    color: gray;
+    font-style: italic;
+}
+
+#code-table {
+    border: var(--border);
+    width: var(--net-width);
+    table-layout: fixed;  /* equal sized cells */
+}
+
+#code-table td {
+    border: var(--border);
+    text-align: center;
+    background-color: var(--bgcolor);
+    height: var(--cell-height);
+}
+
+#board {
+    border: var(--border);
+    --padding: 10px;
+    padding: var(--padding);
+    width: calc(80% - 2 * var(--padding));  /* calc(var(--net-width) - 2 * var(--padding)); */
+    margin: auto auto;  /* center it horizontally */
+    text-align: left;
+    font-family: serif;
+    font-size: 16pt;
+    float: left;
+}
+
+#board .console-cursor {
+    margin-left: var(--cursor-pad);
+    font-size: 10pt;
+    animation: blinker 1s linear infinite;
+}
+
+#countdown {
+    --padding: 10px;
+    width: calc(20% - var(--padding));
+    float: right;
+    font-size: 110%;
+}
+
+#board-console-input {
+    margin-left: var(--cursor-pad);
+}
+
+#board-history {
+    /*clear: left;*/
 }

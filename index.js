@@ -11,12 +11,18 @@ class D1v1d3 {
      */
 
     constructor () {
+        this.INITIAL_COUNTDOWN = 10 * 60;
+        this.GOOD_GUESS_BONUS = 60;
+        this.BAD_GUESS_PENALTY = -60;
+
         /** @member {Element} */
         this.boardConsole = document.getElementById('board-console-input');
         /** @member {Element} */
         this.boardHistory = document.getElementById('board-history');
         /** @member {Element[]} */
         this.digitElements = document.querySelectorAll('.digit-cell');
+        /** @member {Element} */
+        this.countdownElement = document.getElementById('countdown');
         /** @member {String} */
         this.dividend = '';
         /** @member {String} */
@@ -32,8 +38,15 @@ class D1v1d3 {
         /** @member {KeyBinding[]} */
         this.keyBindings = [];
         /** Which digits have already been revealed.
-         *  @member {Set} */
+         *  @member {Set<Number>} */
         this.decipheredDigits = new Set();
+        /** Which characters have already been revealed.
+         *  @member {Set<String>} */
+        this.decipheredChars = new Set();
+        /** @member {Number} */
+        this.countdown = this.INITIAL_COUNTDOWN;
+        /** @member {Object} */
+        this.countdownTimer = null;
 
         // generate a password for this game instance
         this.generatePassword();
@@ -42,6 +55,8 @@ class D1v1d3 {
         this.animateShuffling();
 
         this.resetConsole();
+
+        this.startCountdown();
 
         // keyboard actions
         this.registerKeyBinding([ord('A'), ord('J')], this.processChar.bind(this));   // keys A to J
@@ -95,6 +110,97 @@ class D1v1d3 {
         }, 3000);
     }
 
+    updateCountdownDisplay() {
+        const minutes = Math.floor(this.countdown / 60);
+        const seconds = this.countdown % 60;
+        const minutesStr = minutes < 10 ? '0' + minutes : minutes.toString();
+        const secondsStr = seconds < 10 ? '0' + seconds : seconds.toString();
+        this.countdownElement.innerText = minutesStr + ':' + secondsStr;
+    }
+
+    startCountdown() {
+        this.updateCountdownDisplay();
+
+        this.countdownTimer = setInterval(() => {
+            this.countdown--;
+            this.updateCountdownDisplay();
+
+            if (this.countdown <= 0) {  // may be less than zero if penalty was applied
+                this.gameOver(false);
+            }
+        }, 1000);
+    }
+
+    addCountdownDelta(delta) {
+        this.countdown = Math.max(1, this.countdown + delta);
+        this.updateCountdownDisplay();
+    }
+
+    gameOver(isBombDisarmed) {
+        clearInterval(this.countdownTimer);
+
+        if (isBombDisarmed) {
+            // ToDo show success message
+            // ToDo show how much time player took and how many guesses were made
+        } else {
+            // ToDo blow up title!
+        }
+    }
+
+    addHistoryRow(contents, className = null) {
+        const row = document.createElement('div');
+        row.innerHTML = '&gt; ' + contents;
+        if (className !== null) {
+            row.classList.add(className);
+        }
+        this.boardHistory.insertBefore(row, this.boardHistory.firstChild);
+    }
+
+    makeGuess(guessedChar, guessedDigit) {
+        this.resetConsole();
+
+        if (this.decipheredChars.has(guessedChar)) {
+            // avoid giving bonus for symbols already discovered
+            const contents = `Symbol ${guessedChar} was already revealed!`;
+            this.addHistoryRow(contents, 'redundant-guess');
+            return;
+        }
+
+        if (this.decipheredDigits.has(guessedDigit)) {
+            const contents = `Digit ${guessedDigit} was already revealed!`;
+            this.addHistoryRow(contents, 'redundant-guess');
+            return;
+        }
+
+        const actualDigit = this.decipherValue(guessedChar);
+
+        const goodGuess = guessedDigit === actualDigit;
+
+        // add guess to history
+        const contents = `${guessedChar} = ${guessedDigit}... ` + (goodGuess ?
+            'right guess! <img src="assets/happy.png"/>' : 'bad guess <img src="assets/sad.png"/>');
+        this.addHistoryRow(contents, goodGuess ? 'good-guess' : 'bad-guess');
+
+        if (goodGuess) {
+            this.decipheredDigits.add(actualDigit);
+            this.decipheredChars.add(guessedChar);
+
+            // reveal corresponding card
+            const digitIndex = ord(guessedChar) - ord('A');
+            const card = this.digitElements[digitIndex];
+            card.classList.remove('digit-cell-slide-up');
+            card.innerText = actualDigit;
+
+            this.addCountdownDelta(this.GOOD_GUESS_BONUS);
+
+            if (this.decipheredDigits.size === 10) {
+                this.gameOver(true);
+            }
+        } else {
+            this.addCountdownDelta(this.BAD_GUESS_PENALTY);
+        }
+    }
+
     processChar(event) {
         const key = event.key.toUpperCase();
 
@@ -143,9 +249,8 @@ class D1v1d3 {
             result = ` = ${quotient}, remainder ${remainder}`;
         }
 
-        const row = document.createElement('div');
-        row.innerHTML = `&gt; ${this.dividend} ÷ ${this.divisor}${result}`;
-        this.boardHistory.insertBefore(row, this.boardHistory.firstChild);
+        const contents = `${this.dividend} ÷ ${this.divisor}${result}`;
+        this.addHistoryRow(contents);
 
         this.resetConsole();
     }
@@ -164,27 +269,7 @@ class D1v1d3 {
         }
 
         const guess = event.keyCode - ord('0');
-        const actual = this.decipherValue(this.dividend);
-        const goodGuess = guess === actual;
-
-        const row = document.createElement('div');
-        row.innerHTML = `&gt; ${this.dividend} = ${guess}... `;
-        row.innerHTML += goodGuess ?
-            'right guess! <img src="assets/happy.png"/>' : 'bad guess <img src="assets/sad.png"/>';
-        row.classList.add(goodGuess ? 'good-guess' : 'bad-guess');
-        this.boardHistory.insertBefore(row, this.boardHistory.firstChild);
-
-        if (goodGuess) {
-            this.decipheredDigits.add(actual);
-
-            // reveal corresponding card
-            const digitIndex = ord(this.dividend) - ord('A');
-            const card = this.digitElements[digitIndex];
-            card.classList.remove('digit-cell-slide-up');
-            card.innerText = actual;
-        }
-
-        this.resetConsole();
+        this.makeGuess(this.dividend, guess);
     }
 
     updateConsole() {
