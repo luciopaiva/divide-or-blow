@@ -11,7 +11,7 @@ class D1v1d3 {
      */
 
     constructor () {
-        this.INITIAL_COUNTDOWN = 10 * 60;
+        this.INITIAL_COUNTDOWN = 5 * 60;
         this.GOOD_GUESS_BONUS = 60;
         this.BAD_GUESS_PENALTY = -60;
 
@@ -23,6 +23,9 @@ class D1v1d3 {
         this.digitElements = document.querySelectorAll('.digit-cell');
         /** @member {Element} */
         this.countdownElement = document.getElementById('countdown');
+        /** @member {Element} */
+        this.gameTitle = document.getElementById('game-title');
+
         /** @member {String} */
         this.dividend = '';
         /** @member {String} */
@@ -44,19 +47,23 @@ class D1v1d3 {
          *  @member {Set<String>} */
         this.decipheredChars = new Set();
         /** @member {Number} */
-        this.countdown = this.INITIAL_COUNTDOWN;
+        this.countdown = 0;
         /** @member {Object} */
         this.countdownTimer = null;
+        /** @member {Object} */
+        this.shufflingAnimationTimer = null;
 
-        // generate a password for this game instance
-        this.generatePassword();
-
-        // animate shuffling
-        this.animateShuffling();
-
-        this.resetConsole();
-
-        this.startCountdown();
+        // title expansion animation stuff
+        /** @member {Object} */
+        this.expansionAnimationTimer = null;
+        /** @member {[Number, Number, Number]} */
+        this.expansionAnimationColorStart = null;
+        /** @member {[Number, Number, Number]} */
+        this.expansionAnimationColorEnd = null;
+        /** @member {String} */
+        this.expansionAnimationSizeStart = null;
+        /** @member {String} */
+        this.expansionAnimationSizeEnd = null;
 
         // keyboard actions
         this.registerKeyBinding([ord('A'), ord('J')], this.processChar.bind(this));   // keys A to J
@@ -67,6 +74,20 @@ class D1v1d3 {
         this.registerKeyBinding(187, this.processAssignOperator.bind(this));          // equal sign
         this.registerKeyBinding([ord('0'), ord('9')], this.processDigit.bind(this));  // keys 0 to 9
         document.addEventListener('keydown', this.onKeyDown.bind(this), false);
+
+        this.restartGame();
+    }
+
+    restartGame() {
+        this.decipheredChars = new Set();
+        this.decipheredDigits = new Set();
+        // generate a password for this game instance
+        this.generatePassword();
+        this.resetConsole();
+        this.restartCountdown();
+        // animate shuffling
+        this.restartShufflingAnimation();
+        this.restartTitleExpansionAnimation();
     }
 
     generatePassword() {
@@ -89,25 +110,71 @@ class D1v1d3 {
         }
     }
 
-    animateShuffling() {
+    restartTitleExpansionAnimation() {
+        if (this.expansionAnimationTimer !== null) {
+            clearInterval(this.expansionAnimationTimer);
+            this.expansionAnimationTimer = null;
+        }
+
+        const computedStyle = window.getComputedStyle(document.body);
+
+        // prepare color interpolation
+        const colorStart = computedStyle.getPropertyValue('--fg-color').replace(/[^a-zA-Z0-9]/g, '');
+        this.expansionAnimationColorStart = [
+            parseInt(colorStart.substr(0, 2), 16),
+            parseInt(colorStart.substr(2, 2), 16),
+            parseInt(colorStart.substr(4, 2), 16)
+        ];
+        const colorEnd = computedStyle.getPropertyValue('--ex-color').replace(/[^a-zA-Z0-9]/g, '');
+        this.expansionAnimationColorEnd = [
+            parseInt(colorEnd.substr(0, 2), 16),
+            parseInt(colorEnd.substr(2, 2), 16),
+            parseInt(colorEnd.substr(4, 2), 16)
+        ];
+        this.gameTitle.style.color = this.expansionAnimationColorStart;
+
+        // prepare font interpolation
+        this.expansionAnimationSizeStart = computedStyle.getPropertyValue('--title-initial-font-size');
+        this.expansionAnimationSizeEnd = computedStyle.getPropertyValue('--title-final-font-size');
+        this.gameTitle.style.fontSize = this.expansionAnimationSizeStart;
+
+        this.expansionAnimationTimer = setInterval(() => {
+            const progress = 1 - (this.countdown / this.INITIAL_COUNTDOWN);  // start in 0, blow up in 1
+            this.gameTitle.style.color = lerpColor(
+                this.expansionAnimationColorStart, this.expansionAnimationColorEnd, progress);
+            this.gameTitle.style.fontSize = lerpNumber(
+                    parseInt(this.expansionAnimationSizeStart, 10),
+                    parseInt(this.expansionAnimationSizeEnd, 10),
+                    progress) + 'em';
+        }, 1000);
+    }
+
+    restartShufflingAnimation() {
+        this.stopShufflingAnimation();
+
         for (let i = 0; i < 10; i++) {
             const card = this.digitElements[i];
             card.classList.add('digit-cell-slide-up');
             card.innerText = i.toString();
         }
-        const shufflingAnimationTimer = setInterval(() => {
+        this.shufflingAnimationTimer = setInterval(() => {
             for (const card of this.digitElements) {
                 const currentDigit = parseInt(card.innerText, 10);
                 const nextDigit = (currentDigit + 1) % 10;
                 card.innerText = nextDigit.toString();
             }
         }, 100);
-        setTimeout(() => {
-            clearInterval(shufflingAnimationTimer);
-            for (const card of this.digitElements) {
-                card.innerText = '?';
-            }
-        }, 3000);
+        setTimeout(() => this.stopShufflingAnimation(), 3000);
+    }
+
+    stopShufflingAnimation() {
+        if (this.shufflingAnimationTimer !== null) {
+            clearInterval(this.shufflingAnimationTimer);
+            this.shufflingAnimationTimer = null;
+        }
+        for (const card of this.digitElements) {
+            card.innerText = '?';
+        }
     }
 
     updateCountdownDisplay() {
@@ -118,7 +185,13 @@ class D1v1d3 {
         this.countdownElement.innerText = minutesStr + ':' + secondsStr;
     }
 
-    startCountdown() {
+    restartCountdown() {
+        if (this.countdownTimer !== null) {
+            clearInterval(this.countdownTimer);
+        }
+
+        this.countdown = this.INITIAL_COUNTDOWN;
+
         this.updateCountdownDisplay();
 
         this.countdownTimer = setInterval(() => {
@@ -380,6 +453,34 @@ function makeCheatSheet() {
  */
 function ord(char) {
     return char.charCodeAt(0);
+}
+
+/**
+ * Do linear interpolation between c1 and c2 at t and return resulting color.
+ * @param {[Number, Number, Number]} c1 initial RGB color
+ * @param {[Number, Number, Number]} c2 final RGB color
+ * @param {Number} t value in the range [0, 1[
+ * @return {String} interpolated color in the format '#000000'
+ */
+function lerpColor(c1, c2, t) {
+    let r = Math.floor(lerpNumber(c1[0], c2[0], t)).toString(16);
+    let g = Math.floor(lerpNumber(c1[1], c2[1], t)).toString(16);
+    let b = Math.floor(lerpNumber(c1[2], c2[2], t)).toString(16);
+    r = r.length < 2 ? '0' + r : r;
+    g = g.length < 2 ? '0' + g : g;
+    b = b.length < 2 ? '0' + b : b;
+    return '#' + r + g + b;
+}
+
+/**
+ * Do linear interpolation between n1 and n2 at t.
+ * @param {Number} n1 first value
+ * @param {Number} n2 second value
+ * @param {Number} t value in the range [0, 1[
+ * @returns {Number} resulting interpolated value
+ */
+function lerpNumber(n1, n2, t) {
+    return n1 + t * (n2 - n1);
 }
 
 /** cheat code for sheet of possible outcomes */

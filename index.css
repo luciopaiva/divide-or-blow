@@ -1,11 +1,14 @@
 
 :root {
-    --bgcolor: #19181b;
-    --fgcolor: #6081d2;
+    --bg-color: #19181b;
+    --fg-color: #6081d2;
+    --ex-color: #ff0000;
     --border: 1px solid #374577;
     --net-width: 480px;
     --cell-height: 44px;
     --cursor-pad: 5px;
+    --title-initial-font-size: 2em;
+    --title-final-font-size: 3em;
 }
 
 @keyframes blinker {
@@ -26,15 +29,19 @@ body {
     margin: 1em 0 0;
     padding: 0;
     text-align: center;
-    background-color: var(--bgcolor);
-    color: var(--fgcolor);
+    background-color: var(--bg-color);
+    color: var(--fg-color);
     font-size: 30pt;
 }
 
-section, footer {
+header, section, footer {
     margin: 20px auto auto;  /* center it horizontally */
     width: var(--net-width);
     overflow: hidden;  /* adjust height to contain floating children http://stackoverflow.com/a/7817313/778272 */
+}
+
+header {
+    height: 2.5em;
 }
 
 .hidden {
@@ -84,6 +91,22 @@ section, footer {
     font-style: italic;
 }
 
+#game-title {
+    /* center horizontally */
+    left: 50%;
+    transform: translateX(-50%);
+
+    /* detach from page so animation won't push the rest of the page down */
+    margin: 0;
+    position: absolute;
+
+    /* prepare for javascript animation routine */
+    color: var(--fg-color);
+    font-size: var(--title-initial-font-size);
+    transition-property: color, font-size;
+    transition-duration: 1s;
+}
+
 #code-table {
     border: var(--border);
     width: var(--net-width);
@@ -93,7 +116,7 @@ section, footer {
 #code-table td {
     border: var(--border);
     text-align: center;
-    background-color: var(--bgcolor);
+    background-color: var(--bg-color);
     height: var(--cell-height);
 }
 
