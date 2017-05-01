@@ -124,7 +124,7 @@ header {
     border: var(--border);
     --padding: 10px;
     padding: var(--padding);
-    width: calc(80% - 2 * var(--padding));  /* calc(var(--net-width) - 2 * var(--padding)); */
+    width: calc(80% - 2 * var(--padding));
     margin: auto auto;  /* center it horizontally */
     text-align: left;
     font-family: serif;
@@ -147,8 +147,4 @@ header {
 
 #board-console-input {
     margin-left: var(--cursor-pad);
-}
-
-#board-history {
-    /*clear: left;*/
 }
