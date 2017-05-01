@@ -143,7 +143,7 @@ class D1v1d3 {
 
         let result = '';
         if (decipheredSecondValue === 0) {
-            result = ' → division by zero! 😏';
+            result = ' → division by zero!';
         } else {
             let quotient = Math.floor(decipheredDividend / decipheredSecondValue);
             quotient = this.decipheredDigits.has(quotient) ? quotient : this.cipherValue(quotient);
@@ -153,7 +153,7 @@ class D1v1d3 {
         }
 
         const row = document.createElement('div');
-        row.innerText = `> ${this.dividend} ÷ ${this.divisor}${result}`;
+        row.innerHTML = `&gt; ${this.dividend} ÷ ${this.divisor}${result}`;
         this.boardHistory.insertBefore(row, this.boardHistory.firstChild);
 
         this.resetConsole();
@@ -177,8 +177,9 @@ class D1v1d3 {
         const goodGuess = guess === actual;
 
         const row = document.createElement('div');
-        row.innerText = `> ${this.dividend} = ${guess}... `;
-        row.innerText += goodGuess ? 'right guess! 😊' : 'bad guess 😰';
+        row.innerHTML = `&gt; ${this.dividend} = ${guess}... `;
+        row.innerHTML += goodGuess ?
+            'right guess! <img src="assets/happy.png"/>' : 'bad guess <img src="assets/sad.png"/>';
         row.classList.add(goodGuess ? 'good-guess' : 'bad-guess');
         this.boardHistory.insertBefore(row, this.boardHistory.firstChild);
 
