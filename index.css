@@ -63,6 +63,18 @@ body {
     top: calc(-1 * var(--cell-height) - 6px);
 }
 
+.digit-cell {
+    position: relative;
+    z-index: -1;
+    top: 0;
+
+    transition: top 2s ease 0.3s;
+}
+
+.digit-cell-slide-up {
+    top: calc(-1 * var(--cell-height) - 6px);
+}
+
 #board {
     border: var(--border);
     --padding: 10px;

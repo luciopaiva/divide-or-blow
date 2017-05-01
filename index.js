@@ -24,6 +24,8 @@ class D1v1d3 {
         this.boardConsole = document.getElementById('board-console-input');
         /** @member {Element} */
         this.boardHistory = document.getElementById('board-history');
+        /** @member {Element[]} */
+        this.digitElements = document.querySelectorAll('.digit-cell');
         /** @member {String} */
         this.dividend = '';
         /** @member {String} */
@@ -77,14 +79,13 @@ class D1v1d3 {
     }
 
     animateShuffling() {
-        document.querySelector('.digits-row').classList.add('digits-row-slide-up');
-        const digitCards = document.querySelectorAll('.digits-row td');
         for (let i = 0; i < 10; i++) {
-            const card = digitCards[i];
+            const card = this.digitElements[i];
+            card.classList.add('digit-cell-slide-up');
             card.innerText = i.toString();
         }
         const shufflingAnimationTimer = setInterval(() => {
-            for (const card of digitCards) {
+            for (const card of this.digitElements) {
                 const currentDigit = parseInt(card.innerText, 10);
                 const nextDigit = (currentDigit + 1) % 10;
                 card.innerText = nextDigit.toString();
@@ -92,7 +93,7 @@ class D1v1d3 {
         }, 100);
         setTimeout(() => {
             clearInterval(shufflingAnimationTimer);
-            for (const card of digitCards) {
+            for (const card of this.digitElements) {
                 card.innerText = '?';
             }
         }, 3000);
@@ -168,6 +169,14 @@ class D1v1d3 {
         row.innerText = `${this.dividend} = ${guess}? `;
         row.innerText += (guess === actual) ? 'Right guess! 😊' : 'Bad guess... 😰';
         this.boardHistory.insertBefore(row, this.boardHistory.firstChild);
+
+        if (guess === actual) {
+            // reveal corresponding card
+            const digitIndex = ord(this.dividend) - ord('A');
+            const card = this.digitElements[digitIndex];
+            card.classList.remove('digit-cell-slide-up');
+            card.innerText = actual;
+        }
 
         this.resetConsole();
     }
