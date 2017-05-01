@@ -174,13 +174,15 @@ class D1v1d3 {
 
         const guess = event.keyCode - ord('0');
         const actual = this.decipherValue(this.dividend);
+        const goodGuess = guess === actual;
 
         const row = document.createElement('div');
         row.innerText = `> ${this.dividend} = ${guess}... `;
-        row.innerText += (guess === actual) ? 'right guess! 😊' : 'bad guess 😰';
+        row.innerText += goodGuess ? 'right guess! 😊' : 'bad guess 😰';
+        row.classList.add(goodGuess ? 'good-guess' : 'bad-guess');
         this.boardHistory.insertBefore(row, this.boardHistory.firstChild);
 
-        if (guess === actual) {
+        if (goodGuess) {
             this.decipheredDigits.add(actual);
 
             // reveal corresponding card

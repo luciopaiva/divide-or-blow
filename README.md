@@ -29,4 +29,5 @@ And the game you tell you if it was a good guess or not :-)
 
 When trying divisions, use keys `A` to `J` to type numbers, `/` to enter the divisor and `⏎` to run the division.
 
-When making guesses, type the letter (`A` to `J`), followed by `=` and then the corresponding digit (`0` to `9`), pressing `⏎` to see the result.
+When making guesses, type the letter (`A` to `J`), followed by `=` and then the corresponding digit (`0` to `9`) to see
+the result.
