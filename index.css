@@ -18,12 +18,6 @@
     src: url('assets/broken15.ttf');
 }
 
-@font-face {
-    font-family: 'borders-divide';
-    /* taken from http://www.1001freefonts.com/borders_divide__but_hearts_shall_conquer.font */
-    src: url('assets/borders-divide.ttf');
-}
-
 h1 {
     font-weight: normal;
 }
