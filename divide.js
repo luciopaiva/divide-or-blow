@@ -24,6 +24,8 @@ class D1v1d3 {
         /** @member {Element} */
         this.countdownElement = document.getElementById('countdown');
         /** @member {Element} */
+        this.guessCounterElement = document.getElementById('guess-counter');
+        /** @member {Element} */
         this.gameTitle = document.getElementById('game-title');
 
         /** @member {String} */
@@ -54,6 +56,12 @@ class D1v1d3 {
         this.countdownTimer = null;
         /** @member {Object} */
         this.shufflingAnimationTimer = null;
+        /** How many guesses were made so far.
+         *  @member {Number} */
+        this.totalGuesses = 0;
+        /** How many good guesses were made so far.
+         *  @member {Number} */
+        this.goodGuesses = 0;
 
         // title expansion animation stuff
         /** @member {Object} */
@@ -81,6 +89,9 @@ class D1v1d3 {
     }
 
     restartGame() {
+        this.totalGuesses = 0;
+        this.goodGuesses = 0;
+        this.updateGuessCounterDisplay();
         this.decipheredChars = new Set();
         this.decipheredDigits = new Set();
         // generate a password for this game instance
@@ -248,6 +259,10 @@ class D1v1d3 {
         this.boardHistory.insertBefore(row, this.boardHistory.firstChild);
     }
 
+    updateGuessCounterDisplay() {
+        this.guessCounterElement.innerText = this.goodGuesses + '/' + this.totalGuesses;
+    }
+
     makeGuess(guessedChar, guessedDigit) {
         this.resetConsole();
 
@@ -273,7 +288,11 @@ class D1v1d3 {
                 'right guess! <img src="assets/happy.png"/>' : 'bad guess <img src="assets/sad.png"/>');
         this.addHistoryRow(contents, goodGuess ? 'good-guess' : 'bad-guess');
 
+        this.totalGuesses++;
+
         if (goodGuess) {
+            this.goodGuesses++;
+
             this.decipheredDigits.add(actualDigit);
             this.decipheredChars.add(guessedChar);
 
@@ -301,6 +320,8 @@ class D1v1d3 {
         } else {
             this.addCountdownDelta(this.BAD_GUESS_PENALTY);
         }
+
+        this.updateGuessCounterDisplay();
     }
 
     processChar(event) {
