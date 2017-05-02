@@ -84,6 +84,7 @@ class D1v1d3 {
         // generate a password for this game instance
         this.generatePassword();
         this.resetConsole();
+        this.boardHistory.innerHTML = '';
         this.restartCountdown();
         // animate shuffling
         this.restartShufflingAnimation();
@@ -115,6 +116,8 @@ class D1v1d3 {
             clearInterval(this.expansionAnimationTimer);
             this.expansionAnimationTimer = null;
         }
+
+        this.gameTitle.innerHTML = this.gameTitle.getAttribute('data-text');
 
         const computedStyle = window.getComputedStyle(document.body);
 
@@ -217,7 +220,20 @@ class D1v1d3 {
             // ToDo show success message
             // ToDo show how much time player took and how many guesses were made
         } else {
-            // ToDo blow up title!
+            // explode title!
+            let title = this.gameTitle.getAttribute('data-text');
+            title = title.replace(/(.)/g, '<div>$1</div>').replace(/\s/g, '<div>&nbsp;</div>');
+            this.gameTitle.innerHTML = title;
+            setTimeout(() => {  // move style changes to the next tick to avoid the transition not firing
+                this.gameTitle.querySelectorAll('div').forEach(span => {
+                    span.classList.add('exploded');
+                    span.style.left = (-window.innerWidth + Math.random() * 2 * window.innerWidth) + 'px';
+                    span.style.top = (Math.random() * window.innerHeight) + 'px';
+                });
+
+                // restart game after animation finishes
+                setTimeout(() => this.restartGame(), 2000);
+            }, 50);
         }
     }
 
@@ -297,6 +313,9 @@ class D1v1d3 {
             }
         } else if (this.dividend.length > 0) {
             this.dividend = this.dividend.substr(0, this.dividend.length - 1);
+            if (this.isGuessingSymbol) {
+                this.isGuessingSymbol = false;
+            }
         }
     }
 
