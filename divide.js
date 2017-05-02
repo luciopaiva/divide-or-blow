@@ -34,8 +34,10 @@ class D1v1d3 {
         this.isTypingDivisor = false;
         /** @member {Boolean} */
         this.isGuessingSymbol = false;
-        /** @member {Number[]} */
-        this.password = null;
+        /** This is the password that must be unveiled by the player.
+         *  The first position represents A; the second, B, then C and so on.
+         *  @member {Number[]} */
+        this.digitByCharIndex = null;
         /** @member {String[]} */
         this.charByDigit = null;
         /** @member {KeyBinding[]} */
@@ -92,21 +94,21 @@ class D1v1d3 {
     }
 
     generatePassword() {
-        this.password = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+        this.digitByCharIndex = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
 
         // Fisher-Yates shuffling
         for (let i = 0; i < 9; i++) {
             const j = i + 1 + Math.floor(Math.random() * (9 - i));
 
-            const temp = this.password[i];
-            this.password[i] = this.password[j];
-            this.password[j] = temp;
+            const temp = this.digitByCharIndex[i];
+            this.digitByCharIndex[i] = this.digitByCharIndex[j];
+            this.digitByCharIndex[j] = temp;
         }
 
         // prepare map to help when ciphering
         this.charByDigit = [];
         let currentCharCode = ord('A');
-        for (const digit of this.password) {
+        for (const digit of this.digitByCharIndex) {
             this.charByDigit[digit] = String.fromCharCode(currentCharCode++);
         }
     }
@@ -283,8 +285,18 @@ class D1v1d3 {
 
             this.addCountdownDelta(this.GOOD_GUESS_BONUS);
 
-            if (this.decipheredDigits.size === 10) {
+            if (this.decipheredDigits.size == 10) {
                 this.gameOver(true);
+            } else if (this.decipheredDigits.size === 9) {
+                // if the player has unveiled 9 digits, the last one is obvious, so let's show it right away
+                for (let charIndex = 0; charIndex < 10; charIndex++) {
+                    const char = String.fromCharCode(ord('A') + charIndex);
+                    if (!this.decipheredChars.has(char)) {
+                        // found it
+                        this.makeGuess(char, this.digitByCharIndex[charIndex]);
+                        break;
+                    }
+                }
             }
         } else {
             this.addCountdownDelta(this.BAD_GUESS_PENALTY);
@@ -419,7 +431,7 @@ class D1v1d3 {
         let result = '0';
         for (let i = 0; i < cipheredValue.length; i++) {
             const passwordIndex = ord(cipheredValue) - 65;
-            result += this.password[passwordIndex];
+            result += this.digitByCharIndex[passwordIndex];
         }
         return parseInt(result, 10);
     }
