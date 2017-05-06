@@ -27,6 +27,8 @@ class D1v1d3 {
         this.guessCounterElement = document.getElementById('guess-counter');
         /** @member {Element} */
         this.gameTitle = document.getElementById('game-title');
+        /** @member {Element} */
+        this.messageBox = document.getElementById('message-box');
 
         /** @member {String} */
         this.dividend = '';
@@ -62,6 +64,9 @@ class D1v1d3 {
         /** How many good guesses were made so far.
          *  @member {Number} */
         this.goodGuesses = 0;
+        /** Whether the game has started
+         *  @member {Boolean} */
+        this.isGameStarted = false;
 
         // title expansion animation stuff
         /** @member {Object} */
@@ -82,13 +87,16 @@ class D1v1d3 {
         this.registerKeyBinding(111, this.processDivisionOperator.bind(this));        // numeric pad slash
         this.registerKeyBinding(13, this.processReturn.bind(this));                   // return
         this.registerKeyBinding(187, this.processAssignOperator.bind(this));          // equal sign
+        this.registerKeyBinding(32, this.processSpaceBar.bind(this));                 // space bar
         this.registerKeyBinding([ord('0'), ord('9')], this.processDigit.bind(this));  // keys 0 to 9
         document.addEventListener('keydown', this.onKeyDown.bind(this), false);
 
-        this.restartGame();
+        // this.restartGame();
     }
 
     restartGame() {
+        this.messageBox.classList.add('hidden');
+        this.isGameStarted = true;
         this.totalGuesses = 0;
         this.goodGuesses = 0;
         this.updateGuessCounterDisplay();
@@ -304,7 +312,7 @@ class D1v1d3 {
 
             this.addCountdownDelta(this.GOOD_GUESS_BONUS);
 
-            if (this.decipheredDigits.size == 10) {
+            if (this.decipheredDigits.size === 10) {
                 this.gameOver(true);
             } else if (this.decipheredDigits.size === 9) {
                 // if the player has unveiled 9 digits, the last one is obvious, so let's show it right away
@@ -379,6 +387,12 @@ class D1v1d3 {
         this.addHistoryRow(contents);
 
         this.resetConsole();
+    }
+
+    processSpaceBar() {
+        if (!this.isGameStarted) {
+            this.restartGame();
+        }
     }
 
     processAssignOperator() {

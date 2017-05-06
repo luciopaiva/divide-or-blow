@@ -15,55 +15,77 @@
     <h1 id="game-title" data-text="D1V1D3 or BL0W!">D1V1D3 or BL0W!</h1>
 </header>
 
-<section>
-    <table id="code-table" align="center">
-        <tr>
-            <td>A</td>
-            <td>B</td>
-            <td>C</td>
-            <td>D</td>
-            <td>E</td>
-            <td>F</td>
-            <td>G</td>
-            <td>H</td>
-            <td>I</td>
-            <td>J</td>
-        </tr>
-        <tr>
-            <td class="digit-cell">0</td>
-            <td class="digit-cell">1</td>
-            <td class="digit-cell">2</td>
-            <td class="digit-cell">3</td>
-            <td class="digit-cell">4</td>
-            <td class="digit-cell">5</td>
-            <td class="digit-cell">6</td>
-            <td class="digit-cell">7</td>
-            <td class="digit-cell">8</td>
-            <td class="digit-cell">9</td>
-        </tr>
-    </table>
-</section>
+<article id="game-screen">
+    <section>
+        <table id="code-table" align="center">
+            <tr>
+                <td>A</td>
+                <td>B</td>
+                <td>C</td>
+                <td>D</td>
+                <td>E</td>
+                <td>F</td>
+                <td>G</td>
+                <td>H</td>
+                <td>I</td>
+                <td>J</td>
+            </tr>
+            <tr>
+                <td class="digit-cell">0</td>
+                <td class="digit-cell">1</td>
+                <td class="digit-cell">2</td>
+                <td class="digit-cell">3</td>
+                <td class="digit-cell">4</td>
+                <td class="digit-cell">5</td>
+                <td class="digit-cell">6</td>
+                <td class="digit-cell">7</td>
+                <td class="digit-cell">8</td>
+                <td class="digit-cell">9</td>
+            </tr>
+        </table>
+    </section>
 
-<section>
-    <div id="board">
-        <div id="board-console">
-            &gt<span id="board-console-input"></span><span class="console-cursor">▂</span>
+    <section>
+        <div id="board">
+            <div id="board-console">
+                &gt<span id="board-console-input"></span><span class="console-cursor">▂</span>
+            </div>
+            <div id="board-history"></div>
         </div>
-        <div id="board-history"></div>
-    </div>
-    <div id="side-bar">
-        <div id="countdown">
-            --:--
+        <div id="side-bar">
+            <div id="countdown">
+                --:--
+            </div>
+            <div id="guess-counter">
+                0/0
+            </div>
         </div>
-        <div id="guess-counter">
-            0/0
-        </div>
-    </div>
-</section>
+    </section>
 
-<footer>
-    <p class="footnote">Created by Lucio and Priscila on 2017-04-29</p>
-</footer>
+    <section id="message-box">
+        <p style="margin-bottom: 1em">
+            Guess all symbols before everything explodes!
+        </p>
+        <p><strong>How to play:</strong></p>
+        <p>
+            Start the game and try typing <code>A / B</code>.<br />
+            Observe resulting quotients and remainders.
+        </p>
+        <p>
+            From obtained results, make assumptions.<br />
+            For example, try guessing <code>A = 1</code>.<br />
+            Reveal all symbols before time runs out.<br />
+            Good guesses give you 1 extra min;<br />
+            Bad guesses <i>take</i> you 1 min!<br />
+        </p>
+        <p style="margin-top: 1em">
+            <span class="message-blink">Press SPACE to start</span>
+        </p>
+    </section>
 
+
+</article>
+
+<!-- Created by Lucio and Priscila on 2017-04-29 -->
 </body>
 </html>
