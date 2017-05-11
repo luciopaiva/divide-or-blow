@@ -520,6 +520,9 @@ class D1v1d3 {
                 keyOrd = 8;
                 break;
             default:
+                if (event.key.length > 1) {
+                    return;  // other special characters can be discarded right away
+                }
                 keyOrd = ord(event.key.toUpperCase());
         }
 
