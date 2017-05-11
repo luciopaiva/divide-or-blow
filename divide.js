@@ -28,7 +28,21 @@ class D1v1d3 {
         /** @member {Element} */
         this.gameTitle = document.getElementById('game-title');
         /** @member {Element} */
-        this.messageBox = document.getElementById('message-box');
+        this.instructions = document.getElementById('instructions');
+        /** @member {Element} */
+        this.gameSummary = document.getElementById('game-summary');
+        /** @member {Element} */
+        this.gameSummaryMessage = document.getElementById('game-summary-message');
+        /** @member {Element} */
+        this.symbolsRevealedField = document.getElementById('symbols-revealed');
+        /** @member {Element} */
+        this.divisionsMadeField = document.getElementById('divisions-made');
+        /** @member {Element} */
+        this.totalGuessesField = document.getElementById('total-guesses');
+        /** @member {Element} */
+        this.hitRateField = document.getElementById('hit-rate');
+        /** @member {Element} */
+        this.elapsedTimeField = document.getElementById('elapsed-time');
 
         /** @member {String} */
         this.dividend = '';
@@ -53,6 +67,8 @@ class D1v1d3 {
          *  @member {Set<String>} */
         this.decipheredChars = new Set();
         /** @member {Number} */
+        this.numberOfDivisions = 0;
+        /** @member {Number} */
         this.countdown = 0;
         /** @member {Object} */
         this.countdownTimer = null;
@@ -64,9 +80,18 @@ class D1v1d3 {
         /** How many good guesses were made so far.
          *  @member {Number} */
         this.goodGuesses = 0;
-        /** Whether the game has started
+        /** Whether the game has started.
          *  @member {Boolean} */
         this.isGameStarted = false;
+        /** Whether the game summary screen is being displayed.
+         *  @member {Boolean} */
+        this.isShowingGameSummary = false;
+        /** Time when game started.
+         *  @member {Number} */
+        this.startTime = 0;
+        /** Time when game started.
+         *  @member {Number} */
+        this.endTime = 0;
 
         // title expansion animation stuff
         /** @member {Object} */
@@ -90,18 +115,17 @@ class D1v1d3 {
         this.registerKeyBinding(32, this.processSpaceBar.bind(this));                 // space bar
         this.registerKeyBinding([ord('0'), ord('9')], this.processDigit.bind(this));  // keys 0 to 9
         document.addEventListener('keydown', this.onKeyDown.bind(this), false);
-
-        // this.restartGame();
     }
 
     restartGame() {
-        this.messageBox.classList.add('hidden');
+        this.instructions.classList.add('hidden');
         this.isGameStarted = true;
         this.totalGuesses = 0;
         this.goodGuesses = 0;
         this.updateGuessCounterDisplay();
         this.decipheredChars = new Set();
         this.decipheredDigits = new Set();
+        this.numberOfDivisions = 0;
         // generate a password for this game instance
         this.generatePassword();
         this.resetConsole();
@@ -110,6 +134,54 @@ class D1v1d3 {
         // animate shuffling
         this.restartShufflingAnimation();
         this.restartTitleExpansionAnimation();
+        this.startTime = (new Date()).getTime();
+    }
+
+    resetGame() {
+        this.gameSummary.classList.add('hidden');
+        this.instructions.classList.remove('hidden');
+        this.isShowingGameSummary = false;
+        this.isGameStarted = false;
+    }
+
+    showGameSummary() {
+        this.isShowingGameSummary = true;
+
+        // erase history so summary is guaranteed to appear, otherwise it might appear off-screen
+        // ToDo it would be nice to have both the history *and* the summary
+        this.boardHistory.innerHTML = '';
+
+        const symbolsRevealed = this.decipheredChars.size;
+        const hitRate = this.totalGuesses > 0 ? this.goodGuesses / this.totalGuesses : 0;
+        const elapsedTime = (this.endTime - this.startTime) / 1000;
+        const elapsedMins = Math.floor(elapsedTime / 60);
+        const elapsedSecs = Math.round(elapsedTime % 60);
+
+        this.symbolsRevealedField.innerText = (symbolsRevealed * 10).toFixed(0) + '%';
+        this.divisionsMadeField.innerText = this.numberOfDivisions.toString();
+        this.totalGuessesField.innerText = this.totalGuesses.toString();
+        this.hitRateField.innerText = (hitRate * 100).toFixed(0) + '%';
+        this.elapsedTimeField.innerText = elapsedMins.toString() + ':' + (elapsedSecs < 10 ? '0' : '') + elapsedSecs;
+
+        this.gameSummaryMessage.innerText = D1v1d3.getFinalMessage(symbolsRevealed);
+
+        this.gameSummary.classList.remove('hidden');
+    }
+
+    static getFinalMessage(symbolsRevealed) {
+        switch (symbolsRevealed) {
+            case 0: return 'Not nice...';
+            case 1: return 'Try harder';
+            case 2: return 'Expected more from you';
+            case 3: return 'Rookie level';
+            case 4: return 'Uh-oh...';
+            case 5: return 'Could be better';
+            case 6: return 'Not bad';
+            case 7: return 'Good job';
+            case 8: return 'Excellent job!';
+            case 9: return 'Almost perfect!';
+            case 10: return 'Perfect!';
+        }
     }
 
     generatePassword() {
@@ -237,9 +309,11 @@ class D1v1d3 {
     gameOver(isBombDisarmed) {
         clearInterval(this.countdownTimer);
 
+        this.endTime = (new Date()).getTime();
+
         if (isBombDisarmed) {
-            // ToDo show success message
-            // ToDo show how much time player took and how many guesses were made
+            // ToDo show success message with animation
+            this.showGameSummary();
         } else {
             // explode title!
             let title = this.gameTitle.getAttribute('data-text');
@@ -253,7 +327,7 @@ class D1v1d3 {
                 });
 
                 // restart game after animation finishes
-                setTimeout(() => this.restartGame(), 2000);
+                setTimeout(() => this.showGameSummary(), 1000);
             }, 50);
         }
     }
@@ -385,6 +459,7 @@ class D1v1d3 {
 
         const contents = `${this.dividend} ÷ ${this.divisor}${result}`;
         this.addHistoryRow(contents);
+        this.numberOfDivisions++;
 
         this.resetConsole();
     }
@@ -392,6 +467,8 @@ class D1v1d3 {
     processSpaceBar() {
         if (!this.isGameStarted) {
             this.restartGame();
+        } else if (this.isShowingGameSummary) {
+            this.resetGame();
         }
     }
 

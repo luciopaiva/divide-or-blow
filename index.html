@@ -62,7 +62,7 @@
         </div>
     </section>
 
-    <section id="message-box">
+    <section id="instructions" class="message-box">
         <p style="margin-bottom: 1em">
             Guess all symbols before everything explodes!
         </p>
@@ -80,6 +80,18 @@
         </p>
         <p style="margin-top: 1em">
             <span class="message-blink">Press SPACE to start</span>
+        </p>
+    </section>
+
+    <section id="game-summary" class="message-box hidden">
+        <p><strong id="game-summary-message"></strong></p>
+        <p>Symbols revealed: <span id="symbols-revealed"></span></p>
+        <p>Divisions made: <span id="divisions-made"></span></p>
+        <p>Total guesses: <span id="total-guesses"></span></p>
+        <p>Hit rate: <span id="hit-rate"></span></p>
+        <p>Elapsed time: <span id="elapsed-time"></span></p>
+        <p style="margin-top: 1em">
+            <span class="message-blink">Press SPACE to continue</span>
         </p>
     </section>
 

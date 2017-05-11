@@ -52,7 +52,7 @@ header {
 }
 
 code {
-    background-color: #353535;
+    background-color: #212121;
     color: #74a27d;
     padding: 0.05em 0.3em;
     border-radius: 0.3em;
@@ -108,6 +108,18 @@ code {
 .redundant-guess {
     color: gray;
     font-style: italic;
+}
+
+.message-box {
+    /*margin: 0 auto;*/
+    font-family: sans-serif;
+    color: var(--info-color);
+    font-size: 50%;
+}
+
+.message-box p {
+    margin: 0.1em 0;
+    /*line-height: 1.1em;*/
 }
 
 #game-title {
@@ -190,14 +202,7 @@ code {
     margin-left: var(--cursor-pad);
 }
 
-#message-box {
-    /*margin: 0 auto;*/
-    font-family: sans-serif;
-    color: var(--info-color);
-    font-size: 50%;
-}
-
-#message-box p {
-    margin: 0.1em 0;
-    /*line-height: 1.1em;*/
+#game-summary-message {
+    font-size: 150%;
+    margin-bottom: 0.5em;
 }
