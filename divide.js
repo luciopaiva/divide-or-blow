@@ -107,12 +107,11 @@ class D1v1d3 {
 
         // keyboard actions
         this.registerKeyBinding([ord('A'), ord('J')], this.processChar.bind(this));   // keys A to J
-        this.registerKeyBinding(8, this.processBackspace.bind(this));                 // backspace
-        this.registerKeyBinding(191, this.processDivisionOperator.bind(this));        // slash
-        this.registerKeyBinding(111, this.processDivisionOperator.bind(this));        // numeric pad slash
-        this.registerKeyBinding(13, this.processReturn.bind(this));                   // return
-        this.registerKeyBinding(187, this.processAssignOperator.bind(this));          // equal sign
-        this.registerKeyBinding(32, this.processSpaceBar.bind(this));                 // space bar
+        this.registerKeyBinding(8, this.processBackspace.bind(this));                 // Backspace
+        this.registerKeyBinding(ord('/'), this.processDivisionOperator.bind(this));   // slash
+        this.registerKeyBinding(13, this.processReturn.bind(this));                   // Enter
+        this.registerKeyBinding(ord('='), this.processAssignOperator.bind(this));     // equal sign
+        this.registerKeyBinding(ord(' '), this.processSpaceBar.bind(this));           // space bar
         this.registerKeyBinding([ord('0'), ord('9')], this.processDigit.bind(this));  // keys 0 to 9
         document.addEventListener('keydown', this.onKeyDown.bind(this), false);
     }
@@ -512,9 +511,21 @@ class D1v1d3 {
     onKeyDown(event) {
         let isRelevant = false;
 
+        let keyOrd;
+        switch (event.key) {  // do not trust event.keyCode, it's not cross-platform
+            case 'Enter':
+                keyOrd = 13;
+                break;
+            case 'Backspace':
+                keyOrd = 8;
+                break;
+            default:
+                keyOrd = ord(event.key.toUpperCase());
+        }
+
         for (const keyBinding of this.keyBindings) {
             const [firstKey, lastKey] = keyBinding.keys;
-            if (event.keyCode >= firstKey && event.keyCode <= lastKey) {
+            if (keyOrd >= firstKey && keyOrd <= lastKey) {
                 keyBinding.eventHandler(event);
                 isRelevant = true;
                 break;
