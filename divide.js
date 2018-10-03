@@ -171,7 +171,7 @@ class D1v1d3 {
         switch (symbolsRevealed) {
             case 0: return 'Not nice...';
             case 1: return 'Try harder';
-            case 2: return 'Expected more from you';
+            case 2: return 'Expected more of you';
             case 3: return 'Rookie level';
             case 4: return 'Uh-oh...';
             case 5: return 'Could be better';
