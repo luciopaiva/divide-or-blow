@@ -3,7 +3,9 @@
 
 Disarm the bomb before it blows your browser up!
 
-http://luciopaiva.github.io/divide-or-blow
+This is a simple game I made some years ago. It is based on an old DOS game called *Divide and Conquer* (IIRC) I liked to play when I was younger.
+
+https://luciopaiva.github.io/divide-or-blow
 
 Reveal the sequence by making divisions and guessing each of the ten digits. Good guesses give you extra time, but bad
 assumptions will make the bomb explode faster.
